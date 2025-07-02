@@ -1,0 +1,51 @@
+# SecuScan Production Configuration
+app:
+  name: "SecuScan"
+  version: "2.0.0"
+  environment: "production"
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  cors_origins:
+    - "https://your-app.vercel.app"
+    - "https://your-app.railway.app"
+    - "http://localhost:3000"  # For local development
+
+# Security Settings
+security:
+  max_scan_timeout: 300  # 5 minutes
+  max_concurrent_scans: 3
+  allowed_targets:
+    - "127.0.0.1"
+    - "localhost"
+    - "*.example.com"  # Add your allowed domains
+
+# Scan Profiles
+scan_profiles:
+  default:
+    timeout: 30
+    nmap_args: ["-T4", "--top-ports", "1000"]
+  stealth:
+    timeout: 60
+    nmap_args: ["-sS", "-T2", "--top-ports", "100"]
+  aggressive:
+    timeout: 45
+    nmap_args: ["-T5", "-p-", "--version-intensity", "9"]
+  vuln:
+    timeout: 60
+    nmap_args: ["-T4", "--script=vuln", "--top-ports", "1000"]
+
+# Reporting
+reports:
+  directory: "./reports/html"
+  max_files: 100
+  cleanup_after_days: 7
+
+# External APIs
+apis:
+  nvd:
+    enabled: true
+    rate_limit: 100  # requests per hour
+    timeout: 10

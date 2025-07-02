@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SecuScan Security Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
+        h1, h2, h3 { color: #2c3e50; }
+        .section { margin-bottom: 2em; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background: #eaeaea; }
+        .ok { color: green; }
+        .warn { color: orange; }
+        .fail { color: red; }
+        .info { color: #2980b9; }
+        pre { background: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>SecuScan Security Report</h1>
+    <p>Generated on: {{ now() }}</p>
+
+    {% if results.ports %}
+    <div class="section">
+        <h2>Port Scan Results</h2>
+        {% if results.ports[0].error %}
+            <p class="fail">{{ results.ports[0].error }}</p>
+        {% elif results.ports %}
+            <table>
+                <tr>
+                    <th>Port</th>
+                    <th>Protocol</th>
+                    <th>Service</th>
+                    <th>Version</th>
+                </tr>
+                {% for port in results.ports %}
+                <tr>
+                    <td>{{ port.port }}</td>
+                    <td>{{ port.protocol }}</td>
+                    <td>{{ port.service }}</td>
+                    <td>{{ port.version }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p class="ok">No open ports detected.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if results.cves %}
+    <div class="section">
+        <h2>CVE Vulnerability Results</h2>
+        {% if results.cves[0].error %}
+            <p class="fail">{{ results.cves[0].error }}</p>
+        {% elif results.cves[0].info %}
+            <p class="ok">{{ results.cves[0].info }}</p>
+        {% else %}
+            <table>
+                <tr>
+                    <th>CVE ID</th>
+                    <th>Software</th>
+                    <th>Version</th>
+                    <th>Severity</th>
+                    <th>Description</th>
+                </tr>
+                {% for cve in results.cves %}
+                <tr>
+                    <td>{{ cve.cve_id }}</td>
+                    <td>{{ cve.software }}</td>
+                    <td>{{ cve.version }}</td>
+                    <td>{{ cve.severity }}</td>
+                    <td>{{ cve.description }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+        {% if results.cves and results.cves[0].software_checked %}
+            <h3>Installed Software Checked</h3>
+            <table>
+                <tr><th>Name</th><th>Version</th></tr>
+                {% for sw in results.cves[0].software_checked %}
+                <tr><td>{{ sw.name }}</td><td>{{ sw.version }}</td></tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if results.web %}
+    <div class="section">
+        <h2>Web Header Security Analysis</h2>
+        {% if results.web.error %}
+            <p class="fail">{{ results.web.error }}</p>
+        {% else %}
+            <h3>Headers</h3>
+            <table>
+                <tr><th>Header</th><th>Value</th></tr>
+                {% for k, v in results.web.headers.items() %}
+                <tr><td>{{ k }}</td><td>{{ v }}</td></tr>
+                {% endfor %}
+            </table>
+            <h3>Findings</h3>
+            {% if results.web.findings is string %}
+                <p class="ok">{{ results.web.findings }}</p>
+            {% else %}
+                <ul>
+                {% for header, finding in results.web.findings.items() %}
+                    <li class="warn"><b>{{ header }}:</b> {{ finding.status }} — {{ finding.recommendation }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if results.password_audit %}
+    <div class="section">
+        <h2>Password Audit</h2>
+        {% for finding in results.password_audit %}
+            {% if finding.error %}
+                <p class="fail">{{ finding.error }}</p>
+            {% elif finding.info %}
+                <p class="ok">{{ finding.info }}</p>
+            {% else %}
+                <p class="warn"><b>User:</b> {{ finding.user }}<br>
+                <b>Issue:</b> {{ finding.issue }}<br>
+                <b>Recommendation:</b> {{ finding.recommendation }}</p>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if results.config_audit %}
+    <div class="section">
+        <h2>Configuration Baseline Audit</h2>
+        {% for finding in results.config_audit.ssh_config %}
+            {% if finding.error %}
+                <p class="fail">{{ finding.error }}</p>
+            {% elif finding.info %}
+                <p class="ok">{{ finding.info }}</p>
+            {% else %}
+                <p class="warn"><b>Setting:</b> {{ finding.setting }}<br>
+                <b>Issue:</b> {{ finding.issue }}<br>
+                <b>Recommendation:</b> {{ finding.recommendation }}</p>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <hr>
+    <h3>Raw Results</h3>
+    <pre>{{ results | tojson(indent=2) }}</pre>
+</body>
+</html>

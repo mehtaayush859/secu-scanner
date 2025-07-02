@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  secuscan:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+    environment:
+      - PYTHONPATH=/app
+      - NMAP_PATH=/usr/bin/nmap
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add a database for scan history (if needed)
+  # postgres:
+  #   image: postgres:13
+  #   environment:
+  #     POSTGRES_DB: secuscan
+  #     POSTGRES_USER: secuscan
+  #     POSTGRES_PASSWORD: secuscan_pass
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+volumes:
+  postgres_data:

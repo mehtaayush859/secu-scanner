@@ -1,0 +1,12 @@
+# Core dependencies
+requests>=2.28.0
+jinja2>=3.1.0
+pytest>=7.0.0
+colorama>=0.4.6  # For colored terminal output
+
+# Optional dependencies
+weasyprint>=59.0  # For PDF report generation
+
+# Enhanced features
+cryptography>=3.4.0  # For SSL/TLS analysis
+urllib3>=1.26.0  # For HTTP client features

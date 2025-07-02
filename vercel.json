@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "name": "secuscan",
+  "builds": [
+    {
+      "src": "web_app/backend/main.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "web_app/frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "web_app/backend/main.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "web_app/frontend/build/$1"
+    }
+  ],
+  "env": {
+    "ENVIRONMENT": "production",
+    "API_HOST": "0.0.0.0",
+    "API_PORT": "8000"
+  },
+  "functions": {
+    "web_app/backend/main.py": {
+      "maxDuration": 300
+    }
+  }
+} 
