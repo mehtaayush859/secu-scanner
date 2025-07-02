@@ -1,6 +1,6 @@
 import os
 import pytest
-
+ 
 def test_cli_tool_path():
     """Test that the CLI tool directory exists and is importable."""
     assert os.path.isdir('cli_tool'), "cli_tool directory should exist"

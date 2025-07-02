@@ -123,7 +123,7 @@ def scan_http_headers(target: str, timeout: int) -> Dict[str, Any]:
         findings = {}
         missing_headers = []
         insecure_headers = []
-        
+
         # Check for each recommended header
         for header, config in OWASP_HEADER_CHECKS.items():
             if header not in headers:
@@ -145,7 +145,7 @@ def scan_http_headers(target: str, timeout: int) -> Dict[str, Any]:
         
         # Check for information disclosure
         info_disclosure = check_information_disclosure(headers)
-        
+
         return {
             "status_code": resp.status_code,
             "final_url": resp.url,

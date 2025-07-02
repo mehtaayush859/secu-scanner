@@ -19,8 +19,10 @@ API_PORT = int(os.getenv("API_PORT", "8000"))
 # CORS origins based on environment
 if ENVIRONMENT == "production":
     CORS_ORIGINS = [
-        "https://your-app.vercel.app",  # Replace with your actual domain
-        "https://your-app.railway.app",  # Replace with your actual domain
+        "https://secuscan.vercel.app",  # Your Vercel frontend
+        "https://secuscan-git-main-mehtaayush859.vercel.app",
+        "https://secuscan-mehtaayush859.vercel.app",
+        "https://*.onrender.com",  # Allow all Render domains
     ]
 else:
     CORS_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
@@ -146,15 +148,15 @@ async def scan(req: ScanRequest):
         scan_id = f"scan_{int(time.time())}_{hash(req.target) % 10000}"
         
         # Generate report filename
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         report_filename = req.report_name or f"scan_report_{timestamp}.{req.output}"
         
         # Build command
-        cmd = [
-            "python", cli_path,
-            "--target", req.target,
-            "--scan-type", req.scan_type,
-            "--output", req.output,
+    cmd = [
+        "python", cli_path,
+        "--target", req.target,
+        "--scan-type", req.scan_type,
+        "--output", req.output,
             "--scan-profile", req.scan_profile,
             "--report-name", report_filename
         ]
@@ -343,10 +345,10 @@ async def list_history(format: str = "json", limit: int = 20):
     ext = format if format in ("json", "html") else "json"
     
     try:
-        files = [
-            f for f in os.listdir(report_dir)
+    files = [
+        f for f in os.listdir(report_dir)
             if f.startswith(("scan_report_", "quick_scan_", "comprehensive_scan_")) and f.endswith(f".{ext}")
-        ]
+    ]
         files.sort(key=lambda x: os.path.getmtime(os.path.join(report_dir, x)), reverse=True)
         
         # Get file metadata
