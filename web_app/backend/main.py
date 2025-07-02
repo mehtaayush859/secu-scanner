@@ -20,9 +20,7 @@ API_PORT = int(os.getenv("API_PORT", "8000"))
 if ENVIRONMENT == "production":
     CORS_ORIGINS = [
         "https://secuscan.vercel.app",  # Your Vercel frontend
-        "https://secuscan-git-main-mehtaayush859.vercel.app",
-        "https://secuscan-mehtaayush859.vercel.app",
-        "https://*.onrender.com",  # Allow all Render domains
+        "https://secuscan-git-main-mehtaayush859.vercel.app",  # Vercel preview
     ]
 else:
     CORS_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
